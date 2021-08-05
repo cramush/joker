@@ -8,3 +8,4 @@ bot/.daily_users_info.txt
 bot/.manuals
 api/.secrets.yaml
 api/.manuals
+secrets.txt
