@@ -2,7 +2,7 @@ venv
 .idea
 *__pycache__*
 .artifacts
-mongo/.manuals/
+mongo/.manuals
 api/.manuals
 bot/.manuals
 bot/.daily_users_info.txt
