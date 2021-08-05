@@ -1,0 +1,39 @@
+version: "3.9"
+
+services:
+
+  mongo:
+    image: mongo:latest
+    restart: on-failure
+    ports:
+      - "27017:27017"
+    volumes:
+      - ./.artifacts/db:/data/db
+    networks:
+      - joker_network
+
+  api:
+    build:
+      context: ./api
+      dockerfile: Dockerfile
+    restart: on-failure
+    ports:
+      - "8080:8080"
+    depends_on:
+      - mongo
+    networks:
+      - joker_network
+
+  bot:
+    build:
+      context: ./bot
+      dockerfile: Dockerfile
+    restart: on-failure
+    depends_on:
+      - mongo
+    networks:
+      - joker_network
+
+networks:
+  joker_network:
+    name: joker_network

@@ -1,0 +1,5 @@
+FROM mongo
+
+ADD dump /home/dump
+
+CMD mongorestore mongodb://mongo:27017 -v --drop /home/dump
