@@ -3,9 +3,7 @@ venv
 *__pycache__*
 .artifacts
 mongo/.manuals/
-bot/.secrets.yaml
 bot/.daily_users_info.txt
 bot/.manuals
-api/.secrets.yaml
 api/.manuals
 secrets.txt
