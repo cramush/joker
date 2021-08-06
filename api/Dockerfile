@@ -4,7 +4,7 @@ WORKDIR /api
 
 RUN mkdir /etc/joker_api/
 
-ADD /secrets.yaml ./etc/joker_api/secrets.yaml
+ADD secrets.yaml /etc/joker_api/secrets.yaml
 
 ADD /requirements.txt ./requirements.txt
 

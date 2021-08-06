@@ -16,6 +16,13 @@ if collection.estimated_document_count() == 0:
     collection.create_index([("tag", pymongo.ASCENDING), ("date", pymongo.ASCENDING)])
 
 
+@app.route("/", methods=["GET"])
+def hello():
+    response = "Hello, I`m Joker"
+    logger.info(response)
+    return response
+
+
 @app.route("/health", methods=["GET"])
 def get_health():
     response = jsonify({"health": "OK"})
