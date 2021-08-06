@@ -1,5 +1,4 @@
 from flask import Flask, jsonify, request
-from flask_sslify import SSLify
 from bson.objectid import ObjectId
 from datetime import datetime
 import pymongo
@@ -8,7 +7,6 @@ from waitress import serve
 from loguru import logger
 
 app = Flask(__name__)
-sslify = SSLify(app)
 
 client = pymongo.MongoClient(f"mongodb://{db_host}/{db_name}?authSource=admin")
 db = client["joker_database"]
