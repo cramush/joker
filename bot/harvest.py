@@ -1,4 +1,4 @@
-# add cron
+#!/usr/bin/python3.8
 import pymongo
 import smtplib
 from email.mime.multipart import MIMEMultipart

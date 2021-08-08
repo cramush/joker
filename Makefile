@@ -5,7 +5,7 @@ build:
 
 .PHONY: start
 start:
-	docker-compose up -V
+	docker-compose up -V -d
 
 .PHONY: migrate
 migrate:
