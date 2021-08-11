@@ -1,6 +1,6 @@
 import yaml
 
-DEFAULT_SECRET_PATH = "/etc/joker_bot/secrets.yaml"
+DEFAULT_SECRET_PATH = "/etc/harvest/secrets.yaml"
 secrets = yaml.load(open(DEFAULT_SECRET_PATH), Loader=yaml.Loader)
 
 db_login = secrets["db_login"]
