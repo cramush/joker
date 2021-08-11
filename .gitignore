@@ -4,6 +4,5 @@ venv
 .artifacts
 mongo/.manuals
 api/.manuals
-bot/.manuals
-bot/.daily_users_info.txt
+harvest/.manuals
 secrets.txt

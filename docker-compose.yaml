@@ -5,8 +5,9 @@ services:
   mongo:
     image: mongo:latest
     restart: on-failure
-    ports:
-      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: example
     volumes:
       - ./.artifacts/db:/data/db
     networks:

@@ -1,14 +1,13 @@
-#!/usr/bin/python3.8
 import pymongo
 import smtplib
 from email.mime.multipart import MIMEMultipart
 from email.mime.base import MIMEBase
 from email.mime.text import MIMEText
 from email import encoders
-from config import ya_password, yandex, google, db_host, db_name
+from config import password, login, recipient, db_login, db_password, db_host, db_name
 from datetime import date, timedelta
 
-client = pymongo.MongoClient(f"mongodb://{db_host}/{db_name}?authSource=admin")
+client = pymongo.MongoClient(f"mongodb://{db_login}:{db_password}@{db_host}/{db_name}?authSource=admin")
 db = client["joker_database"]
 info_collection = db["info"]
 
@@ -21,7 +20,7 @@ def harvest_info():
            str(el["user_id"]) + ", " +
            str(el["time"]) + "}" for el in box]
 
-    with open(".daily_users_info.txt", "w") as f:
+    with open("daily_users_info.txt", "w") as f:
         for element in box:
             f.write(element + "\n")
 
@@ -30,15 +29,12 @@ def harvest_info():
 
 
 def send_daily_info():
-    pwd = ya_password
-    user = yandex
-    recipients = google
-    file = ".daily_users_info.txt"
+    file = "daily_users_info.txt"
     yesterday = date.today() - timedelta(days=1)
     text = f"отчет за {yesterday}"
 
     msg = MIMEMultipart()
-    msg["From"] = user
+    msg["From"] = login
     msg["Subject"] = "daily users info"
 
     text = MIMEText(text, "plain")
@@ -51,8 +47,8 @@ def send_daily_info():
     msg.attach(attachment)
 
     server = smtplib.SMTP_SSL('smtp.yandex.ru', 465)
-    server.login(user, pwd)
-    server.sendmail(user, recipients, msg.as_string())
+    server.login(login, password)
+    server.sendmail(login, recipient, msg.as_string())
     server.quit()
 
 

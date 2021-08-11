@@ -2,13 +2,13 @@ from flask import Flask, jsonify, request
 from bson.objectid import ObjectId
 from datetime import datetime
 import pymongo
-from config import db_host, db_name
+from config import db_login, db_password, db_host, db_name
 from waitress import serve
 from loguru import logger
 
 app = Flask(__name__)
 
-client = pymongo.MongoClient(f"mongodb://{db_host}/{db_name}?authSource=admin")
+client = pymongo.MongoClient(f"mongodb://{db_login}:{db_password}@{db_host}/{db_name}?authSource=admin")
 db = client["joker_database"]
 collection = db["jokes"]
 if collection.estimated_document_count() == 0:

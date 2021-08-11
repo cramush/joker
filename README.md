@@ -6,3 +6,6 @@ run project -
 
 run migrations - 
 `make migrate`
+
+run harvest -
+`make harvest`

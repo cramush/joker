@@ -1,10 +1,10 @@
 from aiogram import Bot, Dispatcher, executor, types
-from config import telegram_token, db_host, db_name
+from config import db_login, db_password, db_host, db_name, telegram_token
 from aiogram.types import ReplyKeyboardMarkup, KeyboardButton
 import pymongo
 from loguru import logger
 
-client = pymongo.MongoClient(f"mongodb://{db_host}/{db_name}?authSource=admin")
+client = pymongo.MongoClient(f"mongodb://{db_login}:{db_password}@{db_host}/{db_name}?authSource=admin")
 db = client["joker_database"]
 jokes_collection = db["jokes"]
 info_collection = db["info"]
@@ -61,7 +61,9 @@ def users_info(message):
     info_username = info_from["username"]
     info_date = message["date"]
     time = str(info_date)
-    time = time[11:16]
+    hours = int(time[11:13]) + 3
+    minutes = time[13:16]
+    time = str(hours) + minutes
     info_text = message["text"]
 
     user_info_container = {
