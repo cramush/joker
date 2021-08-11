@@ -2,6 +2,7 @@
 .PHONY: build
 build:
 	docker-compose build
+	docker build ./harvest -f harvest/Dockerfile.harvest -t harvest_info
 
 .PHONY: start
 start:
