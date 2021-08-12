@@ -3,6 +3,8 @@ from config import db_login, db_password, db_host, db_name, telegram_token
 from aiogram.types import ReplyKeyboardMarkup, KeyboardButton
 import pymongo
 from loguru import logger
+from datetime import datetime
+import pytz
 
 client = pymongo.MongoClient(f"mongodb://{db_login}:{db_password}@{db_host}/{db_name}?authSource=admin")
 db = client["joker_database"]
@@ -59,11 +61,12 @@ def users_info(message):
     info_id = info_from["id"]
     info_first_name = info_from["first_name"]
     info_username = info_from["username"]
-    info_date = message["date"]
-    time = str(info_date)
-    hours = int(time[11:13]) + 3
-    minutes = time[13:16]
-    time = str(hours) + minutes
+    utc_dt = datetime.utcnow()
+    msc_tz = pytz.timezone('Europe/Moscow')
+    time = utc_dt.replace(tzinfo=pytz.utc).astimezone(msc_tz)
+    time = msc_tz.normalize(time)
+    time = str(time)
+    time = time[11:16]
     info_text = message["text"]
 
     user_info_container = {
