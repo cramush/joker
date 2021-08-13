@@ -9,29 +9,49 @@ import pytz
 client = pymongo.MongoClient(f"mongodb://{db_login}:{db_password}@{db_host}/{db_name}?authSource=admin")
 db = client["joker_database"]
 jokes_collection = db["jokes"]
+bjokes_collection = db["jokes_b_category"]
 info_collection = db["info"]
 
 bot = Bot(token=telegram_token)
 dp = Dispatcher(bot)
 
-random_joke_button = KeyboardButton('Пошути')  # create button
+classic_jokes_category_button = KeyboardButton("Классические")  # create button
+jokes_b_category_button = KeyboardButton("Категория Б")
+# add_new_joke = KeyboardButton("Предложка")
+info_button = KeyboardButton("Информация")
 
-keyboard = ReplyKeyboardMarkup(resize_keyboard=True)  # create keyboard for button
-keyboard.add(random_joke_button)
+menu_keyboard = ReplyKeyboardMarkup(resize_keyboard=True)  # create keyboard for button
+menu_keyboard.add(classic_jokes_category_button, jokes_b_category_button, info_button)
+# menu_keyboard.add(add_new_joke)
+
+random_joke_button = KeyboardButton("Пошути")
+back_to_menu_button = KeyboardButton("Меню")
+
+classic_jokes_keyboard = ReplyKeyboardMarkup(resize_keyboard=True)
+classic_jokes_keyboard.add(random_joke_button, back_to_menu_button)
+
+random_bjoke_button = KeyboardButton("Пошyти")
+
+jokes_b_keyboard = ReplyKeyboardMarkup(resize_keyboard=True)
+jokes_b_keyboard.add(random_bjoke_button, back_to_menu_button)
+
+
+# add_keyboard = ReplyKeyboardMarkup(resize_keyboard=True)
+# add_keyboard.add(back_to_menu_button)
 
 
 @dp.message_handler(commands=['start'])
 async def start(message: types.Message):
-    await message.reply("Жми на кнопку, шутить буду.", reply_markup=keyboard)
+    await message.reply("Hola, amigo!", reply_markup=menu_keyboard)
 
 
 @dp.message_handler()
 async def get_random_joke(message: types.Message):
     message_from = message["from"]
 
-    if (message["text"] == "/info") and (message_from["id"] == 76939702):
+    if (message["text"] == "Информация") and (message_from["id"] == 76939702):
         box = info_collection.find().sort([("date", pymongo.ASCENDING)])
-        box = [str(el["content"]) + ": {" +
+        box = [str(el["category"]) + ": {" +
                str(el["first_name"]) + ", " +
                str(el["username"]) + ", " +
                str(el["user_id"]) + ", " +
@@ -39,12 +59,22 @@ async def get_random_joke(message: types.Message):
         info = "\n".join(box)
         await bot.send_message(message.from_user.id, str(info))
 
-    else:
+    elif(message["text"] == "Информация") and (message_from["id"] != 76939702):
+        await bot.send_message(message.from_user.id, "Кнопка доступна только авторизованным пользователям")
+
+    elif message["text"] == "Меню":
+        await bot.send_message(message.from_user.id, "Меню", reply_markup=menu_keyboard)
+
+    elif message["text"] == "Классические":
+        await bot.send_message(message.from_user.id, "Классические", reply_markup=classic_jokes_keyboard)
+
+    elif message["text"] == "Пошути":
         random_joke = jokes_collection.aggregate([{"$sample": {"size": 1}}])
         random_joke = {"content": el["content"] for el in random_joke}
         random_joke = random_joke["content"]
 
-        users_info(message)
+        category = "Классические"
+        users_info(message, category)
 
         if len(random_joke) > 4096:
             trim_joke = (random_joke[0+i:4096+i] for i in range(0, len(random_joke), 4096))
@@ -54,8 +84,33 @@ async def get_random_joke(message: types.Message):
         else:
             await bot.send_message(message.from_user.id, random_joke)
 
+    elif message["text"] == "Категория Б":
+        await bot.send_message(message.from_user.id, "Категория Б", reply_markup=jokes_b_keyboard)
 
-def users_info(message):
+    elif message["text"] == "Пошyти":
+        random_joke = bjokes_collection.aggregate([{"$sample": {"size": 1}}])
+        random_joke = {"content": el["content"] for el in random_joke}
+        random_joke = random_joke["content"]
+
+        category = "Категория Б"
+        users_info(message, category)
+
+        if len(random_joke) > 4096:
+            trim_joke = (random_joke[0 + i:4096 + i] for i in range(0, len(random_joke), 4096))
+            for element in trim_joke:
+                await bot.send_message(message.from_user.id, element)
+
+        else:
+            await bot.send_message(message.from_user.id, random_joke)
+
+    # elif message["text"] == "Предложка":
+    #     await bot.send_message(message.from_user.id, "@КАТЕГОРИЯ, АНЕК", reply_markup=add_keyboard)
+
+    else:
+        await bot.send_message(message.from_user.id, "Пользуйся кнопками! \nДля рестарта жми > /start <")
+
+
+def users_info(message, category):
     info_from = message["from"]
 
     info_id = info_from["id"]
@@ -67,14 +122,13 @@ def users_info(message):
     time = msc_tz.normalize(time)
     time = str(time)
     time = time[11:16]
-    info_text = message["text"]
 
     user_info_container = {
         "user_id": info_id,
         "first_name": info_first_name,
         "username": info_username,
         "time": time,
-        "content": info_text
+        "category": category
     }
     info_collection.insert_one(user_info_container)
 

@@ -14,7 +14,7 @@ info_collection = db["info"]
 
 def harvest_info():
     box = info_collection.find().sort([("date", pymongo.ASCENDING)])
-    box = [str(el["content"]) + ": {" +
+    box = [str(el["category"]) + ": {" +
            str(el["first_name"]) + ", " +
            str(el["username"]) + ", " +
            str(el["user_id"]) + ", " +
